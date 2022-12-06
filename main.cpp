@@ -23,7 +23,7 @@ int main()
     loadBudgetList();
 
     // Run menu
-    getOption(2);
+    menu::login();
 
     // Save budget list to file
     saveBudgetList();

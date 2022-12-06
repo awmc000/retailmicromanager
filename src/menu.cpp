@@ -5,6 +5,7 @@
 #include "../header/global.h"
 #include "../header/staff.h"
 #include <sstream>
+#include <ctime>
 #include <locale>
 #include <iomanip>
 
@@ -12,6 +13,12 @@ using std::cout;
 using std::cin;
 using std::endl;
 namespace menu {
+    /*
+     * dayOneSetup()
+     *
+     * Purpose: Set up the data list files on the initial run of the MicroManager.
+     *
+     */
     void dayOneSetup() {
         // for use in taking input
         string line;
@@ -46,6 +53,7 @@ namespace menu {
         budget_list.push_back(unallocated);
 
         saveBudgetList();
+        // on exit, should return to main.cpp:main() and thus run the menu.cpp:login() func
     }
 
     void infoSetup()
@@ -77,6 +85,70 @@ namespace menu {
         std::getline(cin, ent_phone);
     }
 
+    void login()
+    {
+        cout << "Welcome to the Retail Micro Manager\nEnter your username to continue." << endl;
+        string line;
+
+        bool not_logged_in = true;
+        // linear search for an employee account that has this username
+        staff::Employee curr;
+        while (not_logged_in)
+        {
+            // get line for username
+            std::getline(cin, line);
+            for (int i = 0; i < employee_list.size(); i++) {
+                // get the employee at this index in the list
+                curr = employee_list[i];
+                if (curr.user == line) {
+                    cout << "Welcome " << curr.contact.given_name << "!" << endl;
+                    cout << "Enter your password:" << endl;
+                    bool pass_valid = false;
+                    while (!pass_valid)
+                    {
+                        // get line for password
+                        std::getline(cin, line);
+
+                        // if password is correct
+                        if (curr.pass == line)
+                        {
+                            // then these booleans need to be switched
+                            pass_valid = true;
+                            not_logged_in = false;
+
+                            // that employee is set as the current in a global
+                            current_employee = curr;
+
+                            // get the epoch time the employee clocked in
+                            // declare a time_T to hold epoch time
+                            std::time_t clockin_time_epoch;
+
+                            // send the current time to the epoch time variable
+                            std::time(&clockin_time_epoch);
+
+                            // get a pointer to a tm struct of this time
+                            // dereference it, and set it to be the employee's most recent clock-in time.
+                            tm clockin_tm_calendar = *std::localtime(&clockin_time_epoch);
+
+                            // when they clock out, the difference will be added to their "hours worked"
+                            // (hours_worked is since last paycheque, stores the amount to pay for)
+                            curr.clocked_in = clockin_tm_calendar;
+
+                            // and we send the user to the welcome screen
+                            welcome();
+                        }
+                    }
+                }
+            }
+            // if the linear search did not find an Employee struct w/ that username,
+            // the username must have been invalid, and the user will be prompted
+            // again at the next repetition of the loop.
+            cout << "Did not find that user. Try again, or enter 'EXIT' to exit:" << endl;
+            if (line == "EXIT")
+                return;
+        }
+    }
+
     void welcome()
     {
         cout << " Welcome Menu " << endl;
@@ -103,7 +175,7 @@ namespace menu {
         cout << " Cashiering Menu " << endl;
         cout << " a. Sale" << endl;
         cout << " b. Refund" << endl;
-        cout << " c. Inventory" << endl;
+        cout << " c. Inventory [Limited Access]" << endl;
         cout << " d. Exit" << endl;
         char welcome_choice = getOption(4);
         switch (welcome_choice) {
@@ -114,7 +186,7 @@ namespace menu {
                 refund();
                 break;
             case 'c':
-                inventory();
+                inventory(true);
                 break;
             case 'd':
             default:
@@ -126,10 +198,6 @@ namespace menu {
 
     }
     void refund()
-    {
-
-    }
-    void limited_inventory()
     {
 
     }
@@ -151,7 +219,7 @@ namespace menu {
     {
 
     }
-    void inventory()
+    void inventory(bool limited)
     {
 
     }

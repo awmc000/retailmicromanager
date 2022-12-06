@@ -12,6 +12,8 @@ namespace menu {
     void dayOneSetup();
     void infoSetup();
 
+    void login();
+
     // main menu
     void welcome();
 
@@ -26,6 +28,6 @@ namespace menu {
     void budgets();
     void staffing();
     void info();
-    void inventory();
+    void inventory(bool limited);
 }
 #endif //RETAILMICROMANAGER_MENU_H

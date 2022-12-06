@@ -18,6 +18,9 @@ extern vector<staff::Employee> employee_list;
 extern vector<inventory::Item> item_list;
 extern vector<finance::Budget> budget_list;
 
+// current employee logged in
+extern staff::Employee current_employee;
+
 // ent info
 extern string ent_name;
 extern Address ent_address;
