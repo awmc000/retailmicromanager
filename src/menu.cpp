@@ -165,19 +165,35 @@ namespace menu {
         cout << " a. Cashiering" << endl;
         cout << " b. Management" << endl;
         cout << " c. Exit" << endl;
-        char welcome_choice = getOption(3);
-        switch (welcome_choice)
-        {
-            case 'a':
-                cashiering();
-                break;
-            case 'b':
-                management();
-                break;
-            case 'c':
-            default:
-                // add difference since last clock in to current employee's hours worked
-                exit(0);
+
+        bool done = false;
+        while (!done) {
+            char welcome_choice = getOption(3);
+            switch (welcome_choice) {
+                case 'a':
+                    cashiering();
+                    done = true;
+                    break;
+                case 'b':
+                    if (current_employee.rank < 2) {
+                        management();
+                        done = true;
+                    }
+                    else
+                    {
+                        cout << "You need to be rank 0 [Owner] or rank 1 [Mgr] to access that page." << endl;
+                    }
+                    break;
+                case 'c':
+                default:
+                    // add difference since last clock in to current employee's hours worked
+                    tm clockout = getTm();
+                    int hour_diff = clockout.tm_hour - current_employee.clocked_in.tm_hour;
+                    double min_diff = clockout.tm_min - current_employee.clocked_in.tm_min;
+                    min_diff /= 60; // 30 -> 0.5, 45 -> 0.75, etc.
+                    current_employee.hours_worked += (hour_diff + min_diff);
+                    exit(0);
+            }
         }
     }
 
@@ -188,25 +204,72 @@ namespace menu {
         cout << " b. Refund" << endl;
         cout << " c. Inventory [Limited Access]" << endl;
         cout << " d. Exit" << endl;
-        char welcome_choice = getOption(4);
-        switch (welcome_choice) {
-            case 'a':
-                sale();
-                break;
-            case 'b':
-                refund();
-                break;
-            case 'c':
-                inventory(true);
-                break;
-            case 'd':
-            default:
-                return;
+        bool done = false;
+        while (!done) {
+            char welcome_choice = getOption(4);
+            switch (welcome_choice) {
+                case 'a':
+                    sale();
+                    done = true;
+                    break;
+                case 'b':
+                    refund();
+                    done = true;
+                    break;
+                case 'c':
+                    inventory(true);
+                    done = true;
+                    break;
+                case 'd':
+                default:
+                    return;
+            }
         }
     }
     void sale()
     {
+        cout << "Entering point of sale mode: enter 'q' to exit." << endl;
+        string line;
+        while (line != "q") {
 
+            cout<< "Making a sale: Enter UPCs one at a time pressing enter to add products, then press 's' to subtotal."
+                << endl;
+
+            vector<inventory::Item> selection;
+            cents subtotal = 0;
+            while (line != "s") {
+                // get line of input
+                cout << "Enter UPC:" << endl;
+                std::getline(cin, line);
+
+                // convert to long long (upc type)
+                long long search_upc = stoll(line);
+
+                // linear search item list for this upc
+                for (int i = 0; i < item_list.size(); ++i) {
+                    if (item_list[i].upc == search_upc) {
+                        selection.push_back(item_list[i]);
+                        cout << "Added " << item_list[i].name << ", $" << formatMoney(item_list[i].price) << endl;
+                        subtotal += item_list[i].price;
+                        cout << "New subtotal: " << subtotal << endl;
+                    }
+                }
+            }
+            cout << "Subtotal: " << selection.size() << " items, " << formatMoney(subtotal) << " before taxes."
+                 << endl;
+            cout << "TODO: taxes are not yet being applied" << endl;
+            bool transaction_paid = false;
+            cents total_given = 0;
+            while (!transaction_paid) {
+                cout << "Enter amount of cash given in cents and press enter." << endl;
+                std::getline(cin, line);
+                total_given += stol(line);
+                if (total_given >= subtotal) {
+                    cout << "Give change: " << formatMoney(total_given - subtotal) << endl;
+                    transaction_paid = true;
+                }
+            }
+        }
     }
     void refund()
     {
