@@ -29,7 +29,7 @@ namespace menu {
 
         infoSetup();
 
-        saveEntInfo();
+        //saveEntInfo();
 
 
         // Make owner employee
@@ -40,7 +40,7 @@ namespace menu {
         cout << "You have completed setting up the first employee account." << endl;
         
         employee_list.push_back(first_employee);
-        saveEmployeeList();
+        //saveEmployeeList();
 
         cout << "Enter the amount of money in store possession:" << endl;
         finance::Budget unallocated;
@@ -52,7 +52,7 @@ namespace menu {
 
         budget_list.push_back(unallocated);
 
-        saveBudgetList();
+        //saveBudgetList();
         // on exit, should return to main.cpp:main() and thus run the menu.cpp:login() func
     }
 
@@ -270,7 +270,28 @@ namespace menu {
     void payroll()
     {
         cout << "Paystub Generation" << endl;
-        cout << "Enter a valid employee ID:"
+        cout << "Enter a valid employee ID:" << endl;
+
+        bool valid_entry = false;
+        while (!valid_entry)
+        {
+            string line;
+            std::getline(cin, line);
+            auto search_id = (short) std::stoi(line);
+            for (int i = 0; i < employee_list.size(); ++i)
+            {
+                if (employee_list[i].id == search_id)
+                {
+                    cout << "Hours Worked : " << employee_list[i].hours_worked << endl;
+                    cout << "Hourly Wage  : " << employee_list[i].hourly_wage << endl;
+                    cout << "Gross Payment: " << ((employee_list[i].hourly_wage / 100) * employee_list[i].hours_worked)
+                    << endl;
+                    cout << "Net Payment: TODO" << endl;
+                    valid_entry = true;
+                }
+            }
+            cout << "Try again: " << endl;
+        }
     }
 
     string formatMoney(cents amount)
