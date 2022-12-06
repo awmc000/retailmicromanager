@@ -25,6 +25,7 @@ namespace inventory {
         string supplier_email;
         string supplier_phone;
     };
+    Item createItem();
 }
 
 #endif //RETAILMICROMANAGER_INVENTORY_H
