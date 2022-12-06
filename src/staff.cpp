@@ -89,7 +89,7 @@ namespace staff {
         cout << "Hours worked set to 0." << endl;
         new_emp.hours_worked = 0;
 
-        cout << "Enter your rank:" << endl;
+        cout << "Enter your rank (0 = Owner, 1 = Manager, 2 = Associate):" << endl;
         std::getline(cin, line);
         new_emp.rank = (short int) std::stoi(line);
 
