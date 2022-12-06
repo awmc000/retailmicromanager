@@ -55,6 +55,9 @@
  */
 #include "../header/global.h"
 #define EMP_LINES 20
+#define EMP_POINTS 22
+#define BUDGET_POINTS 4
+#define ITEM_POINTS 11
 
 vector<staff::Employee> employee_list;
 vector<inventory::Item> item_list;
@@ -134,7 +137,7 @@ void loadEmployeeList()
 
     int i = 0;
 
-    for (i; i < lines; i += 20)
+    for (i; i < lines;i += EMP_POINTS)
     {
         staff::Employee curr;
         std::getline(ifs_employees, line);
@@ -168,6 +171,12 @@ void loadEmployeeList()
         curr.dob.tm_mday = std::stoi(line);
 
         std::getline(ifs_employees, line);
+        curr.contact.surname = line;
+
+        std::getline(ifs_employees, line);
+        curr.contact.given_name = line;
+
+        std::getline(ifs_employees, line);
         curr.contact.address.street_address = line;
 
         std::getline(ifs_employees, line);
@@ -196,21 +205,106 @@ void loadEmployeeList()
 
         std::getline(ifs_employees, line);
         curr.rank = (short int) std::stoi(line);
+
+        employee_list.push_back(curr);
     }
 
 }
-void loadProductList()
+void loadItemList()
 {
+    std::ifstream ifs_items ("data/items");
 
+    if (!ifs_items.is_open()) {
+        std::cerr << "loadItemList(): file was not opened";
+        return;
+    }
+
+    // current employee
+    //staff::Employee curr;
+    // string to store current line
+    string line;
+
+    // current line of file being accessed
+    int lines = (int) linesInFile("data/items");
+    std::cerr << lines << " lines in data/itmes ( loadItemList() )" << std::endl;
+
+    int i = 0;
+    for (i; i < lines; i+= ITEM_POINTS)
+    {
+        inventory::Item curr;
+
+        std::getline(ifs_items, line);
+        curr.name = line;
+
+        std::getline(ifs_items, line);
+        curr.desc = line;
+
+        std::getline(ifs_items, line);
+        curr.note = line;
+
+        std::getline(ifs_items, line);
+        curr.upc = stoll(line);
+
+        std::getline(ifs_items, line);
+        curr.cost = stol(line);
+
+        std::getline(ifs_items, line);
+        curr.price = stol(line);
+
+        std::getline(ifs_items, line);
+        curr.qty = stoi(line);
+
+        std::getline(ifs_items, line);
+        curr.qty_sold = stoi(line);
+
+        std::getline(ifs_items, line);
+        curr.image_filename = line;
+
+        std::getline(ifs_items, line);
+        curr.supplier_email = line;
+
+        std::getline(ifs_items, line);
+        curr.supplier_phone = line;
+
+        item_list.push_back(curr);
+    }
 }
 void loadBudgetList()
 {
+    std::ifstream ifs_budgets ("data/budgets");
+    if (!ifs_budgets.is_open()) {
+        std::cerr << "loadBudgetList(): file was not opened";
+        return;
+    }
 
+    int lines = (int) linesInFile("data/budgets");
+    std::cerr << lines << " lines in data/budgets ( loadBudgetList() )" << std::endl;
+
+    int i = 0;
+    for (i; i < lines; i+= BUDGET_POINTS)
+    {
+        finance::Budget curr;
+        string line;
+
+        std::getline(ifs_budgets, line);
+        curr.name = line;
+
+        std::getline(ifs_budgets, line);
+        curr.desc = line;
+
+        std::getline(ifs_budgets, line);
+        curr.amount = stol(line);
+
+        std::getline(ifs_budgets, line);
+        curr.can_remove = (bool) std::stoi(line);
+
+        budget_list.push_back(curr);
+    }
 }
 
 void saveEntInfo()
 {
-    std::ofstream ofs_info ("data/info");
+    std::ofstream ofs_info ("data/info", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_info.is_open()) {
         std::cerr << "saveEntInfo(): file was not opened";
@@ -243,11 +337,10 @@ void saveEntInfo()
 
     ofs_info.close();
 }
-
 void saveEmployeeList()
 {
     // open file
-    std::ofstream ofs_employees ("data/employees");
+    std::ofstream ofs_employees ("data/employees", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_employees.is_open()) {
         std::cerr << "saveEmployeeList(): file was not opened";
@@ -292,10 +385,9 @@ void saveEmployeeList()
         ofs_employees << curr.rank << "\n";
     }
 }
-
 void saveItemList()
 {
-    std::ofstream ofs_products ("data/items");
+    std::ofstream ofs_products ("data/items", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_products.is_open()) {
         std::cerr << "saveItemList(): file was not opened";
@@ -307,24 +399,24 @@ void saveItemList()
     for (auto & it : item_list)
     {
         curr = it;
-        // TODO: Determine product load order and write the data points to the file
         ofs_products << curr.name << '\n';
         ofs_products << curr.desc << '\n';
         ofs_products << curr.note << '\n';
-        ofs_products << curr.image_filename << '\n';
+        ofs_products << std::to_string(curr.upc) << '\n';
         ofs_products << std::to_string(curr.cost) << '\n';
         ofs_products << std::to_string(curr.price) << '\n';
         ofs_products << std::to_string(curr.qty) << '\n';
         ofs_products << std::to_string(curr.qty_sold) << '\n';
-        ofs_products << std::to_string(curr.upc) << '\n';
+        ofs_products << curr.image_filename << '\n';
+        ofs_products << curr.supplier_email << '\n';
+        ofs_products << curr.supplier_phone << '\n';
     }
 
     ofs_products.close();
 }
-
 void saveBudgetList()
 {
-    std::ofstream ofs_budgets ("data/budgets");
+    std::ofstream ofs_budgets ("data/budgets", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_budgets.is_open()) {
         std::cerr << "saveBudgetList(): file was not opened";
@@ -339,6 +431,7 @@ void saveBudgetList()
         ofs_budgets << curr.name << '\n';
         ofs_budgets << curr.desc << '\n';
         ofs_budgets << std::to_string(curr.amount) << '\n';
+        ofs_budgets << ((int)curr.can_remove) << '\n'; // write either 1 or 0
     }
 
     ofs_budgets.close();
