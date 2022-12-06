@@ -85,6 +85,8 @@ namespace menu {
         std::getline(cin, ent_phone);
     }
 
+    tm getTm();
+
     void login()
     {
         cout << "Welcome to the Retail Micro Manager\nEnter your username to continue." << endl;
@@ -119,20 +121,10 @@ namespace menu {
                             // that employee is set as the current in a global
                             current_employee = curr;
 
-                            // get the epoch time the employee clocked in
-                            // declare a time_T to hold epoch time
-                            std::time_t clockin_time_epoch;
-
-                            // send the current time to the epoch time variable
-                            std::time(&clockin_time_epoch);
-
-                            // get a pointer to a tm struct of this time
-                            // dereference it, and set it to be the employee's most recent clock-in time.
-                            tm clockin_tm_calendar = *std::localtime(&clockin_time_epoch);
-
+                            // set their clock in time to right now
                             // when they clock out, the difference will be added to their "hours worked"
-                            // (hours_worked is since last paycheque, stores the amount to pay for)
-                            curr.clocked_in = clockin_tm_calendar;
+                            // (hours_worked stores hrs since last paycheque)
+                            curr.clocked_in = getTm();
 
                             // and we send the user to the welcome screen
                             welcome();
@@ -147,6 +139,24 @@ namespace menu {
             if (line == "EXIT")
                 return;
         }
+    }
+
+    /*
+     * getTm()
+     * returns current time as std::tm
+     */
+    tm getTm()
+    {
+        // get the epoch time
+        // declare a time_T to hold epoch time
+        time_t clockin_time_epoch;
+
+        // send the current time to the epoch time variable
+        time(&clockin_time_epoch);
+
+        // get a pointer to a tm struct of this time and dereference it
+        tm clockin_tm_calendar = *localtime(&clockin_time_epoch);
+        return clockin_tm_calendar;
     }
 
     void welcome()
@@ -166,6 +176,7 @@ namespace menu {
                 break;
             case 'c':
             default:
+                // add difference since last clock in to current employee's hours worked
                 exit(0);
         }
     }
@@ -240,7 +251,7 @@ namespace menu {
         cout << "BUDGET ID\t\tNAME\t\tVALUE\t\t\tDESCRIPTION" << endl;
         for (int i = 0; i < budget_list.size(); ++i)
         {
-            cout << i << "\t\t" << budget_list[i].name << "\t\t" << budget_list[i].amount
+            cout << i << "\t\t" << budget_list[i].name << "\t\t" << formatMoney(budget_list[i].amount)
                 << "\t\t" << budget_list[i].desc << endl;
         }
     }
@@ -258,7 +269,8 @@ namespace menu {
     }
     void payroll()
     {
-
+        cout << "Paystub Generation" << endl;
+        cout << "Enter a valid employee ID:"
     }
 
     string formatMoney(cents amount)
