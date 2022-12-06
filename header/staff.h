@@ -19,6 +19,8 @@ namespace staff {
         short int pay_budget;
         tm dob;
         Contact contact;
+        double hours_worked;
+        short int rank;
     };
     Employee createEmployee();
 }

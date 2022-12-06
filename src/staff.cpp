@@ -86,6 +86,13 @@ namespace staff {
         }
         new_emp.dob = birth;
 
+        cout << "Hours worked set to 0." << endl;
+        new_emp.hours_worked = 0;
+
+        cout << "Enter your rank:" << endl;
+        std::getline(cin, line);
+        new_emp.rank = (short int) std::stoi(line);
+
         return new_emp;
     }
 }

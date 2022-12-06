@@ -205,7 +205,28 @@ namespace menu {
     // management and submenus
     void management()
     {
-
+        cout << "Management" << endl;
+        cout << " a. Info" << endl;
+        cout << " b. Inventory [Full Access]" << endl;
+        cout << " c. Staffing" << endl;
+        cout << " d. Finance" << endl;
+        cout << " e. Payroll" << endl;
+        cout << " f. Exit" << endl;
+        char management_choice = getOption(4);
+        switch (management_choice) {
+            case 'a':
+                sale();
+                break;
+            case 'b':
+                refund();
+                break;
+            case 'c':
+                inventory(true);
+                break;
+            case 'd':
+            default:
+                return;
+        }
     }
     void budgets()
     {

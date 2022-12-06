@@ -50,6 +50,8 @@
  * LINE 17: contact.phone
  * LINE 18: contact.email
  * LINE 19: contact.note
+ * LINE 20: hours_worked
+ * LINE 21: rank
  */
 #include "../header/global.h"
 #define EMP_LINES 20
@@ -188,6 +190,12 @@ void loadEmployeeList()
 
         std::getline(ifs_employees, line);
         curr.contact.note = line;
+
+        std::getline(ifs_employees, line);
+        curr.hours_worked = std::stod(line);
+
+        std::getline(ifs_employees, line);
+        curr.rank = (short int) std::stoi(line);
     }
 
 }
@@ -280,6 +288,8 @@ void saveEmployeeList()
         ofs_employees << curr.contact.phone_number << "\n";
         ofs_employees << curr.contact.email << "\n";
         ofs_employees << curr.contact.note << "\n";
+        ofs_employees << curr.hours_worked << "\n";
+        ofs_employees << curr.rank << "\n";
     }
 }
 
