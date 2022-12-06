@@ -9,6 +9,7 @@
 #include "staff.h"
 
 namespace menu {
+
     void dayOneSetup();
     void infoSetup();
 
@@ -27,6 +28,9 @@ namespace menu {
     void budgets();
     void staffing();
     void info();
+    void payroll();
     void inventory(bool limited);
+
+    string formatMoney(cents amount);
 }
 #endif //RETAILMICROMANAGER_MENU_H

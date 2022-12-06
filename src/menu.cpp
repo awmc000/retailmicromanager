@@ -215,22 +215,34 @@ namespace menu {
         char management_choice = getOption(4);
         switch (management_choice) {
             case 'a':
-                sale();
+                info();
                 break;
             case 'b':
-                refund();
+                inventory(false);
                 break;
             case 'c':
-                inventory(true);
+                staffing();
                 break;
             case 'd':
+                budgets();
+                break;
+            case 'e':
+                payroll();
+                break;
+            case 'f':
             default:
                 return;
         }
     }
     void budgets()
     {
-
+        cout << "Budget Overview and Options " << endl;
+        cout << "BUDGET ID\t\tNAME\t\tVALUE\t\t\tDESCRIPTION" << endl;
+        for (int i = 0; i < budget_list.size(); ++i)
+        {
+            cout << i << "\t\t" << budget_list[i].name << "\t\t" << budget_list[i].amount
+                << "\t\t" << budget_list[i].desc << endl;
+        }
     }
     void staffing()
     {
@@ -243,5 +255,37 @@ namespace menu {
     void inventory(bool limited)
     {
 
+    }
+    void payroll()
+    {
+
+    }
+
+    string formatMoney(cents amount)
+    {
+        string s_amount = std::to_string(amount);
+        if (s_amount.size() < 3)
+        {
+            return (s_amount + "c");
+        }
+        else
+        {
+            string new_s;
+
+            // add minus if negative
+            if (amount < 0)
+                new_s = "-";
+
+            // add dollar sign
+            new_s += "$";
+
+            // add amount
+            new_s += s_amount;
+
+            // add decimal point 2 spaces from right
+            new_s.insert(new_s.size() - 2, ".");
+
+            return new_s;
+        }
     }
 }
