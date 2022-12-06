@@ -1,12 +1,64 @@
 //
 // Created by AMC on 12/5/2022.
 //
+/*
+ * - Orders in which structures are written to files -
+ * Each data structure is written and read to/from plain text files.
+ * In order for this to work, the data must be on the correct lines.
+ * To pull this off, a strict order is maintained.
+ */
+/*
+ * Order for Item Data Points
+ * LINE  0: name
+ * LINE  1: desc
+ * LINE  2: note
+ * LINE  3: upc
+ * LINE  4: cost
+ * LINE  5: price
+ * LINE  6: qty
+ * LINE  7: qty_sold
+ * LINE  8: image_filename
+ * LINE  9: supplier_email
+ * LINE 10: supplier_phone
+ */
+/*
+ * Order for Budget Data Points
+ * LINE  0: name
+ * LINE  1: desc
+ * LINE  2: value
+ * LINE  3: can_remove
+ */
+/*
+ * Order for Employee Data Points
+ * LINE  0: id
+ * LINE  1: user
+ * LINE  2: pass
+ * LINE  3: security_question
+ * LINE  4: security_answer
+ * LINE  5: hourly_wage
+ * LINE  6: pay_budget
+ * LINE  7: dob.tm_year
+ * LINE  8: dob.tm_mon
+ * LINE  9: dob.tm_mday
+ * LINE 10: contact.surname
+ * LINE 11: contact.given_name
+ * LINE 12: contact.address.street_address
+ * LINE 13: contact.address.city
+ * LINE 14: contact.address.province
+ * LINE 15: contact.address.postal_code
+ * LINE 16: contact.address.country
+ * LINE 17: contact.phone
+ * LINE 18: contact.email
+ * LINE 19: contact.note
+ */
 #include "../header/global.h"
 #define EMP_LINES 20
 
 vector<staff::Employee> employee_list;
 vector<inventory::Item> item_list;
 vector<finance::Budget> budget_list;
+
+staff::Employee current_employee;
 
 // ent info
 string ent_name;
@@ -68,12 +120,13 @@ void loadEmployeeList()
     }
 
     // current employee
-    staff::Employee curr;
+    //staff::Employee curr;
     // string to store current line
     string line;
 
     // current line of file being accessed
     int lines = (int) linesInFile("data/employees");
+    std::cerr << lines << " lines in data/employees ( loadEmployeeList() )" << std::endl;
 
 
 
@@ -81,6 +134,7 @@ void loadEmployeeList()
 
     for (i; i < lines; i += 20)
     {
+        staff::Employee curr;
         std::getline(ifs_employees, line);
         curr.id = (short) std::stoi(line);
 
@@ -132,6 +186,7 @@ void loadEmployeeList()
         std::getline(ifs_employees, line);
         curr.contact.email = line;
 
+        std::getline(ifs_employees, line);
         curr.contact.note = line;
     }
 

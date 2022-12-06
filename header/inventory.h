@@ -22,8 +22,8 @@ namespace inventory {
 
         string image_filename;
 
-        Contact supplier;
-        Contact manufacturer;
+        string supplier_email;
+        string supplier_phone;
     };
 }
 

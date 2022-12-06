@@ -25,6 +25,8 @@ int main()
     // Run menu
     menu::login();
 
+    std::cout << current_employee.contact.given_name << std::endl;
+
     // Save budget list to file
     saveBudgetList();
     // Save product list to file

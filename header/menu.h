@@ -21,7 +21,6 @@ namespace menu {
     void cashiering();
     void sale();
     void refund();
-    void limited_inventory();
 
     // management and submenus
     void management();
