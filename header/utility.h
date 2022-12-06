@@ -3,6 +3,7 @@
  */
 #ifndef UTILITY_H
 #define UTILITY_H
+
 #include <string>
 #include <iostream>
 #include <ctime>
@@ -32,5 +33,6 @@ char getOption(int num_options);
 bool fileExists (const std::string& name);
 bool setUp();
 long long linesInFile(const string& filename);
+string formatMoney(cents amount);
 
 #endif

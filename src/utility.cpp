@@ -1,9 +1,18 @@
 //
 // Created by AMC on 12/5/2022.
 //
+#include <iomanip>
+#include <locale>
+#include <ctime>
+#include <sstream>
+#include "../header/staff.h"
+#include "../header/global.h"
+#include "../header/menu.h"
 #include "../header/utility.h"
 #include <fstream>
 #include <algorithm>
+
+string formatMoney(cents amount);
 
 char getOption(int num_options)
 {
@@ -48,4 +57,32 @@ long long linesInFile(const string& filename)
     std::ifstream inFile(filename);
     return std::count(std::istreambuf_iterator<char>(inFile),
                std::istreambuf_iterator<char>(), '\n');
+}
+
+string formatMoney(cents amount)
+{
+    string s_amount = std::to_string(amount);
+    if (s_amount.size() < 3)
+    {
+        return (s_amount + "c");
+    }
+    else
+    {
+        string new_s;
+
+        // add minus if negative
+        if (amount < 0)
+            new_s = "-";
+
+        // add dollar sign
+        new_s += "$";
+
+        // add amount
+        new_s += s_amount;
+
+        // add decimal point 2 spaces from right
+        new_s.insert(new_s.size() - 2, ".");
+
+        return new_s;
+    }
 }

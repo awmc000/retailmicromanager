@@ -4,6 +4,7 @@
 #include "../header/menu.h"
 #include "../header/global.h"
 #include "../header/staff.h"
+#include "../header/utility.h"
 #include <sstream>
 #include <ctime>
 #include <locale>
@@ -210,18 +211,17 @@ namespace menu {
             switch (welcome_choice) {
                 case 'a':
                     sale();
-                    done = true;
                     break;
                 case 'b':
                     refund();
-                    done = true;
                     break;
                 case 'c':
                     inventory(true);
-                    done = true;
                     break;
+
                 case 'd':
                 default:
+                    done = true;
                     return;
             }
         }
@@ -286,26 +286,31 @@ namespace menu {
         cout << " d. Finance" << endl;
         cout << " e. Payroll" << endl;
         cout << " f. Exit" << endl;
-        char management_choice = getOption(4);
-        switch (management_choice) {
-            case 'a':
-                info();
-                break;
-            case 'b':
-                inventory(false);
-                break;
-            case 'c':
-                staffing();
-                break;
-            case 'd':
-                budgets();
-                break;
-            case 'e':
-                payroll();
-                break;
-            case 'f':
-            default:
-                return;
+
+        bool done = false;
+        while (!done) {
+            char management_choice = getOption(4);
+            switch (management_choice) {
+                case 'a':
+                    info();
+                    break;
+                case 'b':
+                    inventory(false);
+                    break;
+                case 'c':
+                    staffing();
+                    break;
+                case 'd':
+                    budgets();
+                    break;
+                case 'e':
+                    payroll();
+                    break;
+                case 'f':
+                default:
+                    done = true;
+                    return;
+            }
         }
     }
     void budgets()
@@ -347,8 +352,8 @@ namespace menu {
                 {
                     cout << "Hours Worked : " << employee_list[i].hours_worked << endl;
                     cout << "Hourly Wage  : " << employee_list[i].hourly_wage << endl;
-                    cout << "Gross Payment: " << ((employee_list[i].hourly_wage / 100) * employee_list[i].hours_worked)
-                    << endl;
+                    cout << "Gross Payment: " << (((employee_list[i].hourly_wage) * employee_list[i].hours_worked)
+                    / 100) << endl;
                     cout << "Net Payment: TODO" << endl;
                     valid_entry = true;
                 }
@@ -357,31 +362,4 @@ namespace menu {
         }
     }
 
-    string formatMoney(cents amount)
-    {
-        string s_amount = std::to_string(amount);
-        if (s_amount.size() < 3)
-        {
-            return (s_amount + "c");
-        }
-        else
-        {
-            string new_s;
-
-            // add minus if negative
-            if (amount < 0)
-                new_s = "-";
-
-            // add dollar sign
-            new_s += "$";
-
-            // add amount
-            new_s += s_amount;
-
-            // add decimal point 2 spaces from right
-            new_s.insert(new_s.size() - 2, ".");
-
-            return new_s;
-        }
-    }
 }

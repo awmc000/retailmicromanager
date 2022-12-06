@@ -31,6 +31,5 @@ namespace menu {
     void payroll();
     void inventory(bool limited);
 
-    string formatMoney(cents amount);
 }
 #endif //RETAILMICROMANAGER_MENU_H
