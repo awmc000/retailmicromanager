@@ -9,10 +9,12 @@
 #include <ctime>
 #include <locale>
 #include <iomanip>
+#define DEBUG true
 
 using std::cout;
 using std::cin;
 using std::endl;
+
 namespace menu {
     /*
      * dayOneSetup()
@@ -30,18 +32,15 @@ namespace menu {
 
         infoSetup();
 
-        //saveEntInfo();
-
-
         // Make owner employee
         cout << "You must create a manager-level account." << endl;
 
         staff::Employee first_employee = staff::createEmployee();
+        first_employee.rank = 0; // set them to owner, just in case the user messed up
 
         cout << "You have completed setting up the first employee account." << endl;
-        
+
         employee_list.push_back(first_employee);
-        //saveEmployeeList();
 
         cout << "Enter the amount of money in store possession:" << endl;
         finance::Budget unallocated;
@@ -86,7 +85,6 @@ namespace menu {
         std::getline(cin, ent_phone);
     }
 
-    tm getTm();
 
     void login()
     {
@@ -109,8 +107,7 @@ namespace menu {
                 if (curr.user == line) {
                     cout << "Welcome " << curr.contact.given_name << "!" << endl;
                     cout << "Enter your password:" << endl;
-                    bool pass_valid = false;
-                    while (!pass_valid)
+                    while (true)
                     {
                         // get line for password
                         std::getline(cin, line);
@@ -130,6 +127,7 @@ namespace menu {
                             welcome();
                             // if this part of the code is reached, the user has exited the welcome call
                             // go back to main.cpp:main() to save data
+                            clearScreen();
                             return;
                         }
                     }
@@ -184,6 +182,14 @@ namespace menu {
         return clockin_tm_calendar;
     }
 
+
+
+    void clearScreen()
+    {
+        if (!DEBUG)
+            system("clear");
+    }
+
     void welcomeOptions()
     {
         cout << " Welcome Menu " << endl;
@@ -199,10 +205,12 @@ namespace menu {
             char welcome_choice = getOption(3);
             switch (welcome_choice) {
                 case 'a':
+                    clearScreen();
                     cashiering();
                     break;
                 case 'b':
                     if (current_employee.rank < 2) {
+                        clearScreen();
                         management();
                     }
                     else
@@ -211,6 +219,7 @@ namespace menu {
                     }
                     break;
                 case 'c':
+                    clearScreen();
                     return; // go back to login()
                 default:
                     // add difference since last clock in to current employee's hours worked
@@ -220,44 +229,60 @@ namespace menu {
                     min_diff /= 60; // 30 -> 0.5, 45 -> 0.75, etc.
                     current_employee.hours_worked += (hour_diff + min_diff);
             }
+            clearScreen();
             welcomeOptions();
         }
     }
 
-    void cashiering()
+    void cashieringOptions()
     {
         cout << " Cashiering Menu " << endl;
         cout << " a. Sale" << endl;
         cout << " b. Refund" << endl;
         cout << " c. Inventory [Limited Access]" << endl;
         cout << " d. Exit" << endl;
+    }
+
+
+    void cashiering()
+    {
+        cashieringOptions();
         while (true) {
             char welcome_choice = getOption(4);
             switch (welcome_choice) {
                 case 'a':
+                    clearScreen();
                     sale();
                     break;
                 case 'b':
+                    clearScreen();
                     refund();
                     break;
                 case 'c':
+                    clearScreen();
                     inventory(true);
                     break;
 
                 case 'd':
-                default:
                     return;
+                default:
+                    continue;
             }
+            cashieringOptions();
         }
     }
+
     void sale()
     {
         cout << "Entering point of sale mode: enter 'q' to exit." << endl;
         string line;
         while (line != "q") {
 
-            cout<< "Making a sale: Enter UPCs one at a time pressing enter to add products, then press 's' to subtotal."
-                << endl;
+            if (line == "q")
+                break;
+
+            cout << "Making a sale: Enter UPCs one at a time pressing enter to add products, " << endl;
+            cout << "then press 's' to subtotal." << endl;
 
             vector<inventory::Item> selection;
             cents subtotal = 0;
@@ -265,6 +290,12 @@ namespace menu {
                 // get line of input
                 cout << "Enter UPC:" << endl;
                 std::getline(cin, line);
+
+                if (line == "s")
+                    break;
+
+                if (line == "q")
+                    return;
 
                 // convert to long long (upc type)
                 long long search_upc = stoll(line);
@@ -275,9 +306,14 @@ namespace menu {
                     if (item_list[i].upc == search_upc) {
                         found = true;
                         selection.push_back(item_list[i]);
-                        cout << "Added " << item_list[i].name << ", $" << formatMoney(item_list[i].price) << endl;
+                        string msg = "Added " + item_list[i].name + ", " + formatMoney(item_list[i].price)
+                                + "\n";
+                        cout << msg;
                         subtotal += item_list[i].price;
-                        cout << "New subtotal: " << subtotal << endl;
+                        item_list[i].qty--;
+                        item_list[i].qty_sold++;
+                        cout << "New subtotal: " << subtotal << '\n';
+                        cout.flush();
                     }
                 }
                 if (!found)
@@ -285,6 +321,10 @@ namespace menu {
                     cout << "Item not found, try again:" << endl;
                 }
             }
+
+            if (line == "q")
+                return;
+
             cout << "Subtotal: " << selection.size() << " items, " << formatMoney(subtotal) << " before taxes."
                  << endl;
             cout << "TODO: taxes are not yet being applied" << endl;
@@ -304,7 +344,64 @@ namespace menu {
     }
     void refund()
     {
+        cout << "Entering refund mode: enter 'q' to exit." << endl;
+        string line;
+        while (line != "q") {
 
+            if (line == "q")
+                break;
+
+            cout << "Making a sale: Enter UPCs one at a time pressing enter to add products, " << endl;
+            cout << "then press 's' to subtotal." << endl;
+
+            vector<inventory::Item> selection;
+            cents subtotal = 0;
+            while (line != "s") {
+                // get line of input
+                cout << "Enter UPC:" << endl;
+                std::getline(cin, line);
+
+                if (line == "s")
+                    break;
+
+                if (line == "q")
+                    return;
+
+                // convert to long long (upc type)
+                long long search_upc = stoll(line);
+                bool found = false;
+
+                // linear search item list for this upc
+                for (int i = 0; i < item_list.size(); ++i) {
+                    if (item_list[i].upc == search_upc) {
+                        found = true;
+                        selection.push_back(item_list[i]);
+                        string msg = "Added " + item_list[i].name + ", " + formatMoney(item_list[i].price)
+                                     + "\n";
+                        cout << msg;
+                        subtotal += item_list[i].price;
+                        item_list[i].qty++;
+                        item_list[i].qty_sold--;
+                        cout << "New subtotal: " << subtotal << '\n';
+                        cout.flush();
+                    }
+                }
+                if (!found)
+                {
+                    cout << "Item not found, try again:" << endl;
+                }
+            }
+
+            if (line == "q")
+                return;
+
+            cout << "Subtotal: " << selection.size() << " items, " << formatMoney(subtotal) << " before taxes."
+                 << endl;
+            cout << "TODO: taxes are not yet being applied" << endl;
+            cout << "Return to customer: " << formatMoney(subtotal) << endl;
+            budget_list[0].amount -= subtotal;
+            return;
+        }
     }
 
     // management and submenus
@@ -326,18 +423,23 @@ namespace menu {
             char management_choice = getOption(6);
             switch (management_choice) {
                 case 'a':
+                    clearScreen();
                     info();
                     break;
                 case 'b':
+                    clearScreen();
                     inventory(false);
                     break;
                 case 'c':
+                    clearScreen();
                     staffing();
                     break;
                 case 'd':
+                    clearScreen();
                     budgets();
                     break;
                 case 'e':
+                    clearScreen();
                     payroll();
                     break;
                 case 'f':
@@ -570,7 +672,7 @@ namespace menu {
                     // This is a hacky way to make sure the user cannot set a negative quantity.
                     int change = std::stoi(line);
                     if (change < -(item_list[i].qty)) {
-                        change = item_list[i].qty;
+                        change = -item_list[i].qty;
                         cout << "Since you entered a quantity to remove greater than the total stock," << endl;
                         cout << "the entire quantity in stock will be removed, but the listing retained." << endl;
                     }

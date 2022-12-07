@@ -16,12 +16,18 @@ namespace menu {
     void login();
     void forgotPassword();
 
+
+    tm getTm();
+
+    void clearScreen();
+
     // main menu
     void welcomeOptions();
     void welcome();
 
     // cashier and submenus
     void cashiering();
+    void cashieringOptions();
     void sale();
     void refund();
 
