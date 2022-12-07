@@ -17,7 +17,7 @@ namespace inventory {
         cents cost;
         cents price;
 
-        unsigned int qty;
+        int qty;
         unsigned int qty_sold;
 
         string image_filename;
