@@ -93,13 +93,16 @@ namespace menu {
         cout << "Welcome to the Retail Micro Manager\nEnter your username to continue or enter 'EXIT' to exit:" << endl;
         string line;
 
-        bool not_logged_in = true;
         // linear search for an employee account that has this username
         staff::Employee curr;
-        while (not_logged_in)
+        while (true)
         {
             // get line for username
             std::getline(cin, line);
+
+            if (line == "EXIT")
+                return;
+
             for (int i = 0; i < employee_list.size(); i++) {
                 // get the employee at this index in the list
                 curr = employee_list[i];
@@ -136,15 +139,31 @@ namespace menu {
             // the username must have been invalid, and the user will be prompted
             // again at the next repetition of the loop.
             cout << "Did not find that user. Try again, or enter 'EXIT' to exit:" << endl;
-            if (line == "EXIT")
-                return;
+
         }
     }
 
     // TODO: Implement forgot password feature
     void forgotPassword()
     {
+        cout << "Forgot Password" << endl;
+        cout << "Your security question is: " << current_employee.security_question << endl;
+        cout << "Enter the answer to change your password or EXIT to exit." << endl;
+        while (true) {
+            string line;
+            std::getline(cin, line);
+            if (line == "EXIT")
+                return;
 
+            if (line == current_employee.security_answer)
+            {
+                cout << "Success! Enter your new password." << endl;
+                std::getline(cin, line);
+                current_employee.pass = line;
+                return;
+            }
+            cout << "Try again." << endl;
+        }
     }
 
     /*
@@ -165,13 +184,17 @@ namespace menu {
         return clockin_tm_calendar;
     }
 
-    void welcome()
+    void welcomeOptions()
     {
         cout << " Welcome Menu " << endl;
         cout << " a. Cashiering" << endl;
         cout << " b. Management" << endl;
         cout << " c. Exit" << endl;
+    }
 
+    void welcome()
+    {
+        welcomeOptions();
         while (true) {
             char welcome_choice = getOption(3);
             switch (welcome_choice) {
@@ -188,6 +211,7 @@ namespace menu {
                     }
                     break;
                 case 'c':
+                    return; // go back to login()
                 default:
                     // add difference since last clock in to current employee's hours worked
                     tm clockout = getTm();
@@ -195,8 +219,8 @@ namespace menu {
                     double min_diff = clockout.tm_min - current_employee.clocked_in.tm_min;
                     min_diff /= 60; // 30 -> 0.5, 45 -> 0.75, etc.
                     current_employee.hours_worked += (hour_diff + min_diff);
-                    exit(0);
             }
+            welcomeOptions();
         }
     }
 
@@ -322,7 +346,6 @@ namespace menu {
                     continue;
             }
             managementOptions();
-            return;
         }
     }
     void budgetsOptions()
@@ -422,10 +445,24 @@ namespace menu {
         {
             staff::Employee curr;
             curr = employee_list[i];
-            cout << "ID\t\tRANK\t\tNAME\t\tPHONE\t\tWAGE/HR\t\tHOURS TO PAY" << endl;
-            cout << curr.id << "\t\t" << curr.rank << "\t\t "<< curr.contact.given_name << "\t\t"
-            << curr.contact.surname << "\t\t" << curr.contact.phone_number << "\t\t" << curr.hourly_wage << "\t\t"
-            << curr.hours_worked << endl;
+            cout << "╔══════════════════════════════════════╗" << endl;
+            cout << formatBox("ID: " + std::to_string(curr.id)) << endl;
+            cout << formatBox("Name: " + curr.contact.given_name + " " + curr.contact.surname) << endl;
+            cout << formatBox("Phone: " + curr.contact.phone_number) << endl;
+            cout << formatBox("Email: " + curr.contact.email) << endl;
+            cout << formatBox("- Address - ") << endl;
+            cout << formatBox(curr.contact.address.street_address) << endl;
+            cout << formatBox(curr.contact.address.city) << endl;
+            cout << formatBox(curr.contact.address.province) << endl;
+            cout << formatBox(curr.contact.address.postal_code) << endl;
+            cout << formatBox("Wage: " + formatMoney(curr.hourly_wage)) << endl;
+            cout << formatBox("Rank: " + std::to_string(curr.rank)) << endl;
+            cout << "╚══════════════════════════════════════╝" << endl;
+            if ((i % 5 == 0) && (i != 0))
+            {
+                cout << "Hit enter to see the next page..." << endl;
+                getString();
+            }
         }
     }
     void staffingFire()
@@ -433,9 +470,52 @@ namespace menu {
 
     }
 
+    void infoOptions()
+    {
+        cout << "Entreprise Info" << endl;
+        cout << "Select the letter next to a value to change it." << endl;
+        cout << "a. Name: " << ent_name << endl;
+        cout << " Address:" << endl;
+        cout << "\tb. Street Address:" << ent_address.street_address << endl;
+        cout << "\tc. City" << ent_address.city << endl;
+        cout << "\td. Province" << ent_address.province << endl;
+        cout << "\te. Postal Code" << ent_address.postal_code << endl;
+        cout << "\tf. Country" << ent_address.country << endl;
+        cout << "g. Phone: " << ent_phone << endl;
+        cout << "h. Email: " << ent_email << endl;
+        cout << "i. Exit" << endl;
+    }
     void info()
     {
+        infoOptions();
+        while (true)
+        {
+            char option = getOption(9);
+            string line;
+            switch (option)
+            {
+                case 'a':
+                    cout << "Enter the new name: " << endl;
+                    ent_name = getString();
+                    cout << "The name is updated to " << ent_name << endl;
+                    break;
 
+                case 'b':
+                    ent_address.street_address = getStreetAddress();
+                    break;
+                case 'c':
+                    ent_address.city = getString();
+                    break;
+
+                case 'd':
+                    ent_address.province = getString();
+                    break;
+
+                case 'e':
+                    ent_address.postal_code = getPostalCode();
+                default: continue;
+            }
+        }
     }
     void inventoryOptions()
     {
@@ -443,16 +523,14 @@ namespace menu {
         cout << "a. Add new item" << endl;
         cout << "b. Update item quantity" << endl;
         cout << "c. List items" << endl;
-        cout << "d. Edit item information" << endl;
-        cout << "e. Remove item" << endl;
-        cout << "f. Exit" << endl;
+        cout << "d. Exit" << endl;
     }
     void inventory(bool limited)
     {
         inventoryOptions();
         while (true)
         {
-            char option = getOption(3);
+            char option = getOption(4);
             switch (option)
             {
                 case 'a':
@@ -465,14 +543,9 @@ namespace menu {
                     inventoryList();
                     break;
                 case 'd':
-                    inventoryEditItem();
-                    break;
-                case 'e':
-                    inventoryRemove();
-
-                case 'f':
-                default:
                     return;
+
+                default: continue;
             }
             inventoryOptions();
         }
@@ -480,26 +553,83 @@ namespace menu {
 
     void inventoryAdd()
     {
-
+        item_list.push_back(inventory::createItem());
     }
 
     void inventoryUpdateQuantity()
     {
-
+        while (true) {
+            cout << "Enter a UPC to update quantity of, or 'EXIT' to exit: " << endl;
+            string line;
+            std::getline(cin, line);
+            long long search_upc = stol(line);
+            for (int i = 0; i < item_list.size(); ++i) {
+                if (item_list[i].upc == search_upc) {
+                    cout << "The current quantity of " << item_list[i].name << " is " << item_list[i].qty << endl;
+                    cout << "Enter the quantity to add:" << endl;
+                    // This is a hacky way to make sure the user cannot set a negative quantity.
+                    int change = std::stoi(line);
+                    if (change < -(item_list[i].qty)) {
+                        change = item_list[i].qty;
+                        cout << "Since you entered a quantity to remove greater than the total stock," << endl;
+                        cout << "the entire quantity in stock will be removed, but the listing retained." << endl;
+                    }
+                    item_list[i].qty += change;
+                    cout << "The new quantity is " << item_list[i].qty << endl;
+                    cout << "Returning to Inventory menu..." << endl;
+                    return;
+                }
+                if (i % 5 == 0)
+                {
+                    cout << "Hit enter to see the next page..." << endl;
+                    getString();
+                }
+            }
+            cout << "Could not find that UPC.. try again or enter 'EXIT'" << endl;
+        }
     }
 
     void inventoryList()
     {
+        cout << "Printing inventory list..." << endl;
+        inventory::Item curr;
+        int i = 0;
+        for (i; i < item_list.size(); i++)
+        {
+            curr = item_list[i];
+            string upc = "UPC  :" + std::to_string(curr.upc);
+            string name = "NAME :" + curr.name;
+            string desc = "DESC :" + curr.desc;
+            string cost = "COST :" + formatMoney(curr.cost);
+            string price = "PRICE:" + formatMoney(curr.price);
+            string qty = "QTY  :" + std::to_string(curr.qty);
+            string sold = "SOLD :" + std::to_string(curr.qty_sold);
 
-    }
-
-    void inventoryEditItem()
-    {
-
-    }
-    void inventoryRemove()
-    {
-
+            cout << "╔══════════════════════════════════════╗" << endl;
+            cout << formatBox(upc) << endl;
+            // currently formatted name, desc, supplier email and supplier phone
+            // will not print properly for unknown reasons
+            //cout << formatBox(name) << endl;
+            //cout << formatBox(desc) << endl;
+            cout << name << endl;
+            cout << desc << endl;
+            cout << formatBox(cost) << endl;
+            cout << formatBox(price) << endl;
+            cout << formatBox(qty) << endl;
+            cout << formatBox(sold) << endl;
+            cout << formatBox("SUPPLIER CONTACT - ") << endl;
+            //cout << formatBox(curr.supplier_email) << endl;
+            //cout << formatBox(curr.supplier_phone) << endl;
+            cout << curr.supplier_email << endl;
+            cout << curr.supplier_phone << endl;
+            cout << "╚══════════════════════════════════════╝" << endl;
+            if ((i % 5 == 0) && (i != 0))
+            {
+                cout << "Hit enter to see the next page..." << endl;
+                getString();
+            }
+        }
+        cout << i << " items printed to screen." << endl;
     }
 
     void payroll()

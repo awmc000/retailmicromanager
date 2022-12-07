@@ -17,6 +17,7 @@ namespace menu {
     void forgotPassword();
 
     // main menu
+    void welcomeOptions();
     void welcome();
 
     // cashier and submenus
@@ -44,8 +45,6 @@ namespace menu {
     void inventoryAdd();
     void inventoryUpdateQuantity();
     void inventoryList();
-    void inventoryEditItem();
-    void inventoryRemove();
 
     // Staffing submenus
     void staffingHire();
