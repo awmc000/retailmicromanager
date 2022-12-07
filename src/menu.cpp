@@ -90,7 +90,7 @@ namespace menu {
 
     void login()
     {
-        cout << "Welcome to the Retail Micro Manager\nEnter your username to continue." << endl;
+        cout << "Welcome to the Retail Micro Manager\nEnter your username to continue or enter 'EXIT' to exit:" << endl;
         string line;
 
         bool not_logged_in = true;
@@ -115,10 +115,6 @@ namespace menu {
                         // if password is correct
                         if (curr.pass == line)
                         {
-                            // then these booleans need to be switched
-                            pass_valid = true;
-                            not_logged_in = false;
-
                             // that employee is set as the current in a global
                             current_employee = curr;
 
@@ -129,6 +125,9 @@ namespace menu {
 
                             // and we send the user to the welcome screen
                             welcome();
+                            // if this part of the code is reached, the user has exited the welcome call
+                            // go back to main.cpp:main() to save data
+                            return;
                         }
                     }
                 }
@@ -140,6 +139,12 @@ namespace menu {
             if (line == "EXIT")
                 return;
         }
+    }
+
+    // TODO: Implement forgot password feature
+    void forgotPassword()
+    {
+
     }
 
     /*
@@ -167,18 +172,15 @@ namespace menu {
         cout << " b. Management" << endl;
         cout << " c. Exit" << endl;
 
-        bool done = false;
-        while (!done) {
+        while (true) {
             char welcome_choice = getOption(3);
             switch (welcome_choice) {
                 case 'a':
                     cashiering();
-                    done = true;
                     break;
                 case 'b':
                     if (current_employee.rank < 2) {
                         management();
-                        done = true;
                     }
                     else
                     {
@@ -205,8 +207,7 @@ namespace menu {
         cout << " b. Refund" << endl;
         cout << " c. Inventory [Limited Access]" << endl;
         cout << " d. Exit" << endl;
-        bool done = false;
-        while (!done) {
+        while (true) {
             char welcome_choice = getOption(4);
             switch (welcome_choice) {
                 case 'a':
@@ -221,7 +222,6 @@ namespace menu {
 
                 case 'd':
                 default:
-                    done = true;
                     return;
             }
         }
@@ -244,15 +244,21 @@ namespace menu {
 
                 // convert to long long (upc type)
                 long long search_upc = stoll(line);
+                bool found = false;
 
                 // linear search item list for this upc
                 for (int i = 0; i < item_list.size(); ++i) {
                     if (item_list[i].upc == search_upc) {
+                        found = true;
                         selection.push_back(item_list[i]);
                         cout << "Added " << item_list[i].name << ", $" << formatMoney(item_list[i].price) << endl;
                         subtotal += item_list[i].price;
                         cout << "New subtotal: " << subtotal << endl;
                     }
+                }
+                if (!found)
+                {
+                    cout << "Item not found, try again:" << endl;
                 }
             }
             cout << "Subtotal: " << selection.size() << " items, " << formatMoney(subtotal) << " before taxes."
@@ -266,6 +272,7 @@ namespace menu {
                 total_given += stol(line);
                 if (total_given >= subtotal) {
                     cout << "Give change: " << formatMoney(total_given - subtotal) << endl;
+                    budget_list[0].amount += subtotal;
                     transaction_paid = true;
                 }
             }
@@ -277,7 +284,7 @@ namespace menu {
     }
 
     // management and submenus
-    void management()
+    void managementOptions()
     {
         cout << "Management" << endl;
         cout << " a. Info" << endl;
@@ -286,10 +293,13 @@ namespace menu {
         cout << " d. Finance" << endl;
         cout << " e. Payroll" << endl;
         cout << " f. Exit" << endl;
+    }
+    void management()
+    {
+        managementOptions();
 
-        bool done = false;
-        while (!done) {
-            char management_choice = getOption(4);
+        while (true) {
+            char management_choice = getOption(6);
             switch (management_choice) {
                 case 'a':
                     info();
@@ -307,41 +317,197 @@ namespace menu {
                     payroll();
                     break;
                 case 'f':
-                default:
-                    done = true;
                     return;
+                default:
+                    continue;
             }
+            managementOptions();
+            return;
         }
     }
-    void budgets()
+    void budgetsOptions()
     {
         cout << "Budget Overview and Options " << endl;
         cout << "BUDGET ID\t\tNAME\t\tVALUE\t\t\tDESCRIPTION" << endl;
         for (int i = 0; i < budget_list.size(); ++i)
         {
             cout << i << "\t\t" << budget_list[i].name << "\t\t" << formatMoney(budget_list[i].amount)
-                << "\t\t" << budget_list[i].desc << endl;
+                 << "\t\t" << budget_list[i].desc << endl;
+        }
+        // options
+        cout << "a. Add a budget" << endl;
+        cout << "b. Make a transfer between budgets" << endl;
+        cout << "c. Remove a budget" << endl;
+        cout << "d. Exit" << endl;
+    }
+
+    void budgets()
+    {
+        budgetsOptions();
+        while (true)
+        {
+            char choice = getOption(3);
+            switch (choice)
+            {
+                case 'a':
+                    cout << "todo, add budget" << endl;
+                    break;
+                case 'b':
+                    cout << "todo, transfer bt budgets" << endl;
+                    break;
+                case 'c':
+                    cout << "todo, remove a budget" << endl;
+                    break;
+                case 'd':
+                    return; // go up a menu to management();
+                default:
+                    break;
+            }
+            budgetsOptions();
         }
     }
     void staffing()
     {
+        staffingOptions();
+
+        while (true)
+        {
+            char choice = getOption(5);
+            switch (choice)
+            {
+                case 'a':
+                    staffingHire();
+                    break;
+                case 'b':
+                    staffingEdit();
+                    break;
+                case 'c':
+                    staffingList();
+                    break;
+                case 'd':
+                    staffingFire();
+                    break;
+
+                case 'e':
+                    return;
+                default: continue;
+            }
+            staffingOptions();
+        }
+    }
+    void staffingOptions()
+    {
+        cout << "Staffing Menu" << endl;
+        cout << "a. hire" << endl;
+        cout << "b. edit" << endl;
+        cout << "c. list" << endl;
+        cout << "d. fire" << endl;
+        cout << "e. exit" << endl;
+    }
+
+    // Staffing submenus
+    void staffingHire()
+    {
+        employee_list.push_back(staff::createEmployee());
+    }
+    void staffingEdit()
+    {
 
     }
+    void staffingList()
+    {
+        cout << "Employee List" << endl;
+        cout << "For details not shown here, go to Edit File..." << endl;
+        for (int i = 0; i < employee_list.size(); ++i)
+        {
+            staff::Employee curr;
+            curr = employee_list[i];
+            cout << "ID\t\tRANK\t\tNAME\t\tPHONE\t\tWAGE/HR\t\tHOURS TO PAY" << endl;
+            cout << curr.id << "\t\t" << curr.rank << "\t\t "<< curr.contact.given_name << "\t\t"
+            << curr.contact.surname << "\t\t" << curr.contact.phone_number << "\t\t" << curr.hourly_wage << "\t\t"
+            << curr.hours_worked << endl;
+        }
+    }
+    void staffingFire()
+    {
+
+    }
+
     void info()
     {
 
     }
+    void inventoryOptions()
+    {
+        cout << "Inventory menu" << endl;
+        cout << "a. Add new item" << endl;
+        cout << "b. Update item quantity" << endl;
+        cout << "c. List items" << endl;
+        cout << "d. Edit item information" << endl;
+        cout << "e. Remove item" << endl;
+        cout << "f. Exit" << endl;
+    }
     void inventory(bool limited)
+    {
+        inventoryOptions();
+        while (true)
+        {
+            char option = getOption(3);
+            switch (option)
+            {
+                case 'a':
+                    inventoryAdd();
+                    break;
+                case 'b':
+                    inventoryUpdateQuantity();
+                    break;
+                case 'c':
+                    inventoryList();
+                    break;
+                case 'd':
+                    inventoryEditItem();
+                    break;
+                case 'e':
+                    inventoryRemove();
+
+                case 'f':
+                default:
+                    return;
+            }
+            inventoryOptions();
+        }
+    }
+
+    void inventoryAdd()
     {
 
     }
+
+    void inventoryUpdateQuantity()
+    {
+
+    }
+
+    void inventoryList()
+    {
+
+    }
+
+    void inventoryEditItem()
+    {
+
+    }
+    void inventoryRemove()
+    {
+
+    }
+
     void payroll()
     {
         cout << "Paystub Generation" << endl;
         cout << "Enter a valid employee ID:" << endl;
 
-        bool valid_entry = false;
-        while (!valid_entry)
+        while (true)
         {
             string line;
             std::getline(cin, line);
@@ -355,7 +521,8 @@ namespace menu {
                     cout << "Gross Payment: " << (((employee_list[i].hourly_wage) * employee_list[i].hours_worked)
                     / 100) << endl;
                     cout << "Net Payment: TODO" << endl;
-                    valid_entry = true;
+                    cout << "Returning to Management menu..." << endl;
+                    return;
                 }
             }
             cout << "Try again: " << endl;
