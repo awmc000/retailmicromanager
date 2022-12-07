@@ -30,9 +30,15 @@ struct Contact {
 };
 
 char getOption(int num_options);
+string getString();
+string getStreetAddress();
+string getPostalCode();
+string getPhone();
+string getEmail();
 bool fileExists (const std::string& name);
 bool setUp();
 long long linesInFile(const string& filename);
 string formatMoney(cents amount);
+string formatBox(string s);
 
 #endif

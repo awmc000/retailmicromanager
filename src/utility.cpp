@@ -89,3 +89,37 @@ string formatMoney(cents amount)
         return new_s;
     }
 }
+
+string formatBox(string s)
+{
+    string new_s = "║";
+    new_s += s;
+    int n_spaces = (int)(38 - s.size());
+    string spaces(n_spaces, ' ');
+    new_s += spaces;
+    new_s += "║";
+    return new_s;
+}
+
+string getString()
+{
+    string line;
+    std::getline(std::cin, line);
+    return line;
+}
+string getStreetAddress()
+{
+    return getString();
+}
+string getPostalCode()
+{
+    return getString().substr(0, 6);
+}
+string getPhone()
+{
+    return getString();
+}
+string getEmail()
+{
+    return getString();
+}
