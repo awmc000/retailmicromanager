@@ -13,5 +13,6 @@ namespace finance {
         cents amount;
         bool can_remove;
     };
+    Budget createBudget();
 }
 #endif //RETAILMICROMANAGER_FINANCE_H
