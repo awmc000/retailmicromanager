@@ -21,7 +21,10 @@ char getOption(int num_options)
     while (!valid)
     {
         std::cout << "Enter a lowercase character: " << std::endl;
-        std::cin >> char_input;
+        string line;
+        std::getline(std::cin, line);
+        char_input = line[0];
+
         int alphabet_index = char_input - 'a';
         if ((alphabet_index < num_options) && (alphabet_index >= 0))
         {
