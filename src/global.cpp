@@ -120,7 +120,9 @@ void loadEmployeeList()
     std::ifstream ifs_employees ("data/employees");
 
     if (!ifs_employees.is_open()) {
-        std::cerr << "loadEmployeeList(): file was not opened";
+        std::cerr << "loadEmployeeList(): file was not opened" << std::endl;
+        std::perror(nullptr);
+
         return;
     }
 
@@ -216,6 +218,7 @@ void loadItemList()
 
     if (!ifs_items.is_open()) {
         std::cerr << "loadItemList(): file was not opened";
+        std::perror(nullptr);
         return;
     }
 
@@ -226,7 +229,7 @@ void loadItemList()
 
     // current line of file being accessed
     int lines = (int) linesInFile("data/items");
-    std::cerr << lines << " lines in data/itmes ( loadItemList() )" << std::endl;
+    std::cerr << lines << " lines in data/items ( loadItemList() )" << std::endl;
 
     int i = 0;
     for (i; i < lines; i+= ITEM_POINTS)
@@ -274,6 +277,7 @@ void loadBudgetList()
     std::ifstream ifs_budgets ("data/budgets");
     if (!ifs_budgets.is_open()) {
         std::cerr << "loadBudgetList(): file was not opened";
+        std::perror(nullptr);
         return;
     }
 
@@ -304,6 +308,10 @@ void loadBudgetList()
 
 void saveEntInfo()
 {
+    // first step - delete existing file to avoid appending
+    remove("data/info");
+
+    // setup output file stream of file
     std::ofstream ofs_info ("data/info", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_info.is_open()) {
@@ -339,7 +347,10 @@ void saveEntInfo()
 }
 void saveEmployeeList()
 {
-    // open file
+    // first step - delete existing file to avoid appending
+    remove("data/employees");
+
+    // setup output file stream of file
     std::ofstream ofs_employees ("data/employees", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_employees.is_open()) {
@@ -387,6 +398,10 @@ void saveEmployeeList()
 }
 void saveItemList()
 {
+    // first step - delete existing file to avoid appending
+    remove("data/items");
+
+    // setup output file stream of file
     std::ofstream ofs_products ("data/items", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_products.is_open()) {
@@ -416,6 +431,10 @@ void saveItemList()
 }
 void saveBudgetList()
 {
+    // first step - delete existing file to avoid appending
+    remove("data/budgets");
+
+    // setup output file stream of file
     std::ofstream ofs_budgets ("data/budgets", std::ofstream::out | std::ofstream::trunc);
 
     if (!ofs_budgets.is_open()) {
