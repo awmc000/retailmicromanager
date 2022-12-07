@@ -133,7 +133,7 @@ void loadEmployeeList()
 
     // current line of file being accessed
     int lines = (int) linesInFile("data/employees");
-    std::cerr << lines << " lines in data/employees ( loadEmployeeList() )" << std::endl;
+    //std::cerr << lines << " lines in data/employees ( loadEmployeeList() )" << std::endl;
 
 
 
@@ -229,7 +229,7 @@ void loadItemList()
 
     // current line of file being accessed
     int lines = (int) linesInFile("data/items");
-    std::cerr << lines << " lines in data/items ( loadItemList() )" << std::endl;
+    //std::cerr << lines << " lines in data/items ( loadItemList() )" << std::endl;
 
     int i = 0;
     for (i; i < lines; i+= ITEM_POINTS)
@@ -282,7 +282,7 @@ void loadBudgetList()
     }
 
     int lines = (int) linesInFile("data/budgets");
-    std::cerr << lines << " lines in data/budgets ( loadBudgetList() )" << std::endl;
+    //std::cerr << lines << " lines in data/budgets ( loadBudgetList() )" << std::endl;
 
     int i = 0;
     for (i; i < lines; i+= BUDGET_POINTS)

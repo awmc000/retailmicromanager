@@ -9,7 +9,7 @@
 #include <ctime>
 #include <locale>
 #include <iomanip>
-#define DEBUG true
+#define DEBUG false
 
 using std::cout;
 using std::cin;
@@ -410,9 +410,9 @@ namespace menu {
         cout << "Management" << endl;
         cout << " a. Info" << endl;
         cout << " b. Inventory [Full Access]" << endl;
-        cout << " c. Staffing" << endl;
-        cout << " d. Finance" << endl;
-        cout << " e. Payroll" << endl;
+        cout << " c. Staffing [Partially Functional]" << endl;
+        cout << " d. Finance [Not Yet Functional]" << endl;
+        cout << " e. Payroll [Partially Functional]" << endl;
         cout << " f. Exit" << endl;
     }
     void management()
