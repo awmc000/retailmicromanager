@@ -14,15 +14,17 @@ int main()
     {
         menu::dayOneSetup();
     }
-
-    // Load ent info from file
-    loadEntInfo();
-    // Load employee list from file
-    loadEmployeeList();
-    // Load product list from file
-    loadItemList();
-    // Load budget list from file
-    loadBudgetList();
+    else
+    {
+        // Load ent info from file
+        loadEntInfo();
+        // Load employee list from file
+        loadEmployeeList();
+        // Load product list from file
+        loadItemList();
+        // Load budget list from file
+        loadBudgetList();
+    }
 
     // Run menu
     menu::login();
