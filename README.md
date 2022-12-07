@@ -10,7 +10,7 @@ Open `src/menu.cpp` in a text editor. Near the top of the file, there will be a 
 #define DEBUG true
 ```
 
-Set this macro to `false` to test out the screen erasing.
+Set this macro to `false`, then follow instructions in "To run" to test out the screen erasing.
 
 ## To test the day one setup...
 In order to trigger the program to see it hasn't been set up and see the day one setup process, just delete any or all 
