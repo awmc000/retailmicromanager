@@ -7,8 +7,6 @@
 
 int main()
 {
-    // test function calls go here
-
     // if the program is not set up, start the process of setting up
     if (!setUp())
     {
